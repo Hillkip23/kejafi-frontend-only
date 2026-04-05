@@ -1,36 +1,58 @@
-// app/properties/[id]/checkout/page.jsx
-import React from "react";
-import SwapPanel from "./SwapPanel";
+﻿"use client";
+import { useState } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_KEJAFI_API_URL;
+export default function CheckoutPage() {
+  const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState("");
 
-async function fetchProperty(id) {
-  const res = await fetch(`${API_URL}/properties/${id}`, {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error(`Failed to fetch property ${id}: ${res.status}`);
-  return res.json();
-}
-
-export default async function CheckoutPage({ params }) {
-  const { id } = await params;
-  const data = await fetchProperty(id);
+  const handleSwap = async () => {
+    setLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      alert("Swap completed! (Demo)");
+    } catch (error) {
+      alert("Swap failed: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <main style={{ maxWidth: 900, margin: "2rem auto", padding: "1.5rem" }}>
-      <h1 style={{ fontSize: "1.6rem", marginBottom: "0.5rem" }}>
-        Invest in {data.token_symbol}
-      </h1>
-      <p style={{ marginBottom: "1.25rem", color: "#555" }}>
-        {data.address} · Token price ${data.token_price}, total supply{" "}
-        {data.total_supply.toLocaleString()}
-      </p>
-
-      <SwapPanel
-        tokenPrice={data.token_price}
-        tokenSymbol={data.token_symbol}
-        propertyId={data.id}
-      />
+    <main style={{ maxWidth: 600, margin: "2rem auto", padding: "1.5rem" }}>
+      <h1>Swap FINE5 ↔ FINE6</h1>
+      
+      <div style={{ marginBottom: 16 }}>
+        <label>Amount</label>
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          style={{ width: "100%", padding: 8, marginTop: 8 }}
+          placeholder="Enter amount"
+        />
+      </div>
+      
+      <div style={{ marginBottom: 16, padding: 12, background: "#f3f4f6", borderRadius: 4 }}>
+        <p>Pool Reserves:</p>
+        <p>FINE5: 102,342</p>
+        <p>FINE6: 98,939</p>
+      </div>
+      
+      <button
+        onClick={handleSwap}
+        disabled={loading || !amount}
+        style={{
+          width: "100%",
+          padding: 10,
+          background: loading ? "#9ca3af" : "#3b82f6",
+          color: "white",
+          border: "none",
+          borderRadius: 4,
+          cursor: "pointer"
+        }}
+      >
+        {loading ? "Processing..." : "Execute Swap"}
+      </button>
     </main>
   );
 }
